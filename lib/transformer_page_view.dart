@@ -179,14 +179,14 @@ class TransformerPageController extends PageController {
         : realPage;
   }
 
-  int? getRealIndexFromRenderIndex(num? index) {
+  int? getRealIndexFromRenderIndex(int? index) {
     return _getRealIndexFromRenderIndex(index, loop, itemCount, reverse);
   }
 
   static int? _getRealIndexFromRenderIndex(
-      num? index, bool loop, int? itemCount, bool reverse) {
-    int? result = reverse ? itemCount! - index! - 1 as int? : index as int?;
-    if (loop && result != null) {
+      int? index, bool loop, int? itemCount, bool reverse) {
+    int result = reverse ? (itemCount! - index! - 1) : index!;
+    if (loop) {
       result += kMiddleValue;
     }
     return result;
@@ -317,8 +317,8 @@ class TransformerPageView extends StatefulWidget {
 
   static int? getRealIndexFromRenderIndex(
       {required bool reverse, int? index, int? itemCount, required bool loop}) {
-    int? initPage = reverse ? (itemCount! - index! - 1) : index;
-    if (loop && initPage != null) {
+    int initPage = reverse ? (itemCount! - index! - 1) : index!;
+    if (loop) {
       initPage += kMiddleValue;
     }
     return initPage;
@@ -557,20 +557,18 @@ class _TransformerPageViewState extends State<TransformerPageView> {
   }
 
   int _calcNextIndex(bool next) {
-    int? currentIndex = _activeIndex;
-    if (currentIndex != null) {
-      if (_pageController!.reverse) {
-        if (next) {
-          currentIndex--;
-        } else {
-          currentIndex++;
-        }
+    int? currentIndex = _activeIndex!;
+    if (_pageController!.reverse) {
+      if (next) {
+        currentIndex--;
       } else {
-        if (next) {
-          currentIndex++;
-        } else {
-          currentIndex--;
-        }
+        currentIndex++;
+      }
+    } else {
+      if (next) {
+        currentIndex++;
+      } else {
+        currentIndex--;
       }
     }
 
