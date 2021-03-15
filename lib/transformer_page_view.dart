@@ -114,7 +114,7 @@ class TransformerPageController extends PageController {
             keepPage: keepPage,
             viewportFraction: viewportFraction);
 
-  int? getRenderIndexFromRealIndex(num? index) {
+  int? getRenderIndexFromRealIndex(int index) {
     return _getRenderIndexFromRealIndex(index, loop, itemCount, reverse);
   }
 
@@ -124,20 +124,20 @@ class TransformerPageController extends PageController {
   }
 
   static _getRenderIndexFromRealIndex(
-      num? index, bool loop, int? itemCount, bool reverse) {
+      int index, bool loop, int? itemCount, bool reverse) {
     if (itemCount == 0) return 0;
     int? renderIndex;
     if (loop) {
-      renderIndex = index! - kMiddleValue as int?;
-      renderIndex = renderIndex! % itemCount!;
+      renderIndex = index - kMiddleValue;
+      renderIndex = renderIndex % itemCount!;
       if (renderIndex < 0) {
         renderIndex += itemCount;
       }
     } else {
-      renderIndex = index as int?;
+      renderIndex = index;
     }
     if (reverse) {
-      renderIndex = itemCount! - renderIndex! - 1;
+      renderIndex = itemCount! - renderIndex - 1;
     }
 
     return renderIndex;
@@ -339,7 +339,7 @@ class TransformerPageView extends StatefulWidget {
 
 class _TransformerPageViewState extends State<TransformerPageView> {
   Size? _size;
-  int? _activeIndex;
+  late int _activeIndex;
   double? _currentPixels;
   bool _done = false;
 
