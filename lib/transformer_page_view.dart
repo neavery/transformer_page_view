@@ -144,14 +144,7 @@ class TransformerPageController extends PageController {
   }
 
   double? get realPage {
-    double? page;
-    if (position.maxScrollExtent == null || position.minScrollExtent == null) {
-      page = 0.0;
-    } else {
-      page = super.page;
-    }
-
-    return page;
+    return super.page;
   }
 
   static _getRenderPageFromRealPage(
