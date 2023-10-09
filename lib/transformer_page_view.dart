@@ -78,10 +78,11 @@ abstract class PageTransformer {
   PageTransformer({this.reverse: false});
 
   /// Return a transformed widget, based on child and TransformInfo
-  Widget transform(Widget child, TransformInfo info);
+  Widget transform(Widget? child, TransformInfo info);
 }
 
-typedef Widget PageTransformerBuilderCallback(Widget child, TransformInfo info);
+typedef Widget PageTransformerBuilderCallback(
+    Widget? child, TransformInfo info);
 
 class PageTransformerBuilder extends PageTransformer {
   final PageTransformerBuilderCallback builder;
@@ -90,7 +91,7 @@ class PageTransformerBuilder extends PageTransformer {
       : super(reverse: reverse);
 
   @override
-  Widget transform(Widget child, TransformInfo info) {
+  Widget transform(Widget? child, TransformInfo info) {
     return builder(child, info);
   }
 }
@@ -349,9 +350,10 @@ class _TransformerPageViewState extends State<TransformerPageView> {
   Widget _buildItem(BuildContext context, int index) {
     int? renderIndex = _pageController!.getRenderIndexFromRealIndex(index);
 
-    Widget child = widget.itemBuilder != null
-        ? widget.itemBuilder!(context, renderIndex!)
-        : new Container();
+    final itemBuilder = widget.itemBuilder;
+    if (itemBuilder == null) return SizedBox.shrink();
+
+    Widget child = itemBuilder(context, renderIndex!);
 
     // Optimize performance add child to AnimatedBuilder
     // Based on this article: https://inficial.medium.com/flutter-best-practices-for-improve-performance-7e21e14efebb
@@ -386,7 +388,7 @@ class _TransformerPageViewState extends State<TransformerPageView> {
               done: _done,
               scrollDirection: widget.scrollDirection,
               viewportFraction: widget.viewportFraction);
-          return _transformer!.transform(child, info);
+          return _transformer!.transform(w, info);
         });
   }
 
@@ -395,8 +397,6 @@ class _TransformerPageViewState extends State<TransformerPageView> {
         _pageController!.getRenderIndexFromRealIndex(_activeIndex)! *
             _pageController!.position.viewportDimension *
             widget.viewportFraction;
-
-    //  print("activeIndex:$_activeIndex , pix:$_currentPixels");
 
     return _currentPixels;
   }
