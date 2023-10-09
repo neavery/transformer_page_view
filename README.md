@@ -12,7 +12,7 @@
     
 </p>
 
-# transformer_page_view (Optimzied)
+# transformer_page_view (Optimized)
 
 PageTransformer for flutter - optimized to reduce number of builds when using AnimatorBuilder.
 
