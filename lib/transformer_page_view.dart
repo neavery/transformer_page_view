@@ -260,7 +260,7 @@ class TransformerPageView extends StatefulWidget {
     this.itemBuilder,
     this.pageController,
     required this.itemCount,
-  })   : assert(itemCount == 0 || itemBuilder != null || transformer != null),
+  })  : assert(itemCount == 0 || itemBuilder != null || transformer != null),
         this.duration =
             duration ?? new Duration(milliseconds: kDefaultTransactionDuration),
         super(key: key);
@@ -347,18 +347,18 @@ class _TransformerPageViewState extends State<TransformerPageView> {
   }
 
   Widget _buildItem(BuildContext context, int index) {
+    int? renderIndex = _pageController!.getRenderIndexFromRealIndex(index);
+
+    Widget child = widget.itemBuilder != null
+        ? widget.itemBuilder!(context, renderIndex!)
+        : new Container();
+
+    // Optimize performance add child to AnimatedBuilder
+    // Based on this article: https://inficial.medium.com/flutter-best-practices-for-improve-performance-7e21e14efebb
     return new AnimatedBuilder(
         animation: _pageController!,
+        child: child,
         builder: (BuildContext c, Widget? w) {
-          int? renderIndex =
-              _pageController!.getRenderIndexFromRealIndex(index);
-          Widget? child;
-          if (widget.itemBuilder != null) {
-            child = widget.itemBuilder!(context, renderIndex!);
-          }
-          if (child == null) {
-            child = new Container();
-          }
           if (_size == null) {
             return child;
           }
