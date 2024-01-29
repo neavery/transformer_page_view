@@ -362,7 +362,7 @@ class _TransformerPageViewState extends State<TransformerPageView> {
         child: child,
         builder: (BuildContext c, Widget? w) {
           if (_size == null) {
-            return child;
+            return w != null ? w : SizedBox.shrink();
           }
 
           double position;
@@ -509,7 +509,7 @@ class _TransformerPageViewState extends State<TransformerPageView> {
 
     if (_pageController!.getRenderIndexFromRealIndex(_activeIndex) != index) {
       _fromIndex = _activeIndex = _pageController!.initialPage;
-      if (!created) {
+      if (!created && _pageController!.hasClients) {
         int initPage = _pageController!.getRealIndexFromRenderIndex(index)!;
         _pageController!.animateToPage(initPage,
             duration: widget.duration, curve: widget.curve);
