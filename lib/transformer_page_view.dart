@@ -140,23 +140,6 @@ class TransformerPageController extends PageController {
   @override
   double get viewportFraction => _viewportFraction;
 
-  /// Updates the position's viewport fraction using Flutter's internal API.
-  /// This is wrapped in a try-catch because _PagePosition.viewportFraction is private.
-  void _updatePositionViewportFraction(double value) {
-    if (hasClients) {
-      final targetPage = page?.round() ?? 0;
-      final isScrolling = position.isScrollingNotifier.value;
-      try {
-        (position as dynamic).viewportFraction = value;
-        if (isScrolling) {
-          jumpToPage(targetPage);
-        }
-      } catch (e) {
-        // Failed to update position viewportFraction
-      }
-    }
-  }
-
   /// Sets the viewport fraction and updates the scroll position.
   /// This operation updates the scroll position and triggers a rebuild of any listening widgets.
   /// The value must be greater than 0.0 and less than or equal to 1.0.
@@ -164,11 +147,6 @@ class TransformerPageController extends PageController {
     if (_viewportFraction != value && value > 0.0 && value <= 1.0) {
       _viewportFraction = value;
       _updatePositionViewportFraction(value);
-
-      if (hasClients && position.hasContentDimensions) {
-        position.applyViewportDimension(position.viewportDimension);
-      }
-
       notifyListeners();
     }
   }
@@ -192,16 +170,28 @@ class TransformerPageController extends PageController {
         viewportFraction <= 1.0) {
       _viewportFraction = viewportFraction;
       _updatePositionViewportFraction(viewportFraction);
-
-      if (hasClients && position.hasContentDimensions) {
-        this.position.applyViewportDimension(position.viewportDimension);
-      }
-
       changed = true;
     }
 
     if (changed) {
       notifyListeners();
+    }
+  }
+
+  /// Updates the position's viewport fraction using Flutter's internal API.
+  /// This is wrapped in a try-catch because _PagePosition.viewportFraction is private.
+  void _updatePositionViewportFraction(double value) {
+    if (hasClients) {
+      final targetPage = page?.round() ?? 0;
+      final isScrolling = position.isScrollingNotifier.value;
+      try {
+        (position as dynamic).viewportFraction = value;
+        if (isScrolling) {
+          jumpToPage(targetPage);
+        }
+      } catch (e) {
+        // Failed to update position viewportFraction
+      }
     }
   }
 
