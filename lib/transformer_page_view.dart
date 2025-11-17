@@ -115,14 +115,15 @@ class TransformerPageController extends PageController {
   })  : _itemCount = itemCount,
         _viewportFraction = viewportFraction,
         super(
-            initialPage: TransformerPageController._getRealIndexFromRenderIndex(
-              index: initialPage,
-              loop: loop,
-              itemCount: itemCount,
-              reverse: reverse,
-            ),
-            keepPage: keepPage,
-            viewportFraction: viewportFraction);
+          initialPage: TransformerPageController._getRealIndexFromRenderIndex(
+            index: initialPage,
+            loop: loop,
+            itemCount: itemCount,
+            reverse: reverse,
+          ),
+          keepPage: keepPage,
+          viewportFraction: viewportFraction,
+        );
 
   int get itemCount => _itemCount;
 
@@ -185,7 +186,12 @@ class TransformerPageController extends PageController {
   }
 
   int? getRenderIndexFromRealIndex(int index) {
-    return _getRenderIndexFromRealIndex(index, loop, itemCount, reverse);
+    return _getRenderIndexFromRealIndex(
+      index: index,
+      loop: loop,
+      itemCount: itemCount,
+      reverse: reverse,
+    );
   }
 
   int? getRealItemCount() {
@@ -193,17 +199,17 @@ class TransformerPageController extends PageController {
     return loop ? itemCount + kMaxValue : itemCount;
   }
 
-  static _getRenderIndexFromRealIndex(
-    int index,
-    bool loop,
-    int? itemCount,
-    bool reverse,
-  ) {
+  static _getRenderIndexFromRealIndex({
+    required int index,
+    required bool loop,
+    required int itemCount,
+    required bool reverse,
+  }) {
     if (itemCount == 0) return 0;
     int? renderIndex;
     if (loop) {
       renderIndex = index - kMiddleValue;
-      renderIndex = renderIndex % itemCount!;
+      renderIndex = renderIndex % itemCount;
       if (renderIndex < 0) {
         renderIndex += itemCount;
       }
@@ -211,7 +217,7 @@ class TransformerPageController extends PageController {
       renderIndex = index;
     }
     if (reverse) {
-      renderIndex = itemCount! - renderIndex - 1;
+      renderIndex = itemCount - renderIndex - 1;
     }
 
     return renderIndex;
