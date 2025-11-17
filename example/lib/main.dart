@@ -319,7 +319,7 @@ class DynamicUpdateDemo extends StatefulWidget {
 
 class _DynamicUpdateDemoState extends State<DynamicUpdateDemo> {
   late TransformerPageController _controller;
-  int _itemCount = 3;
+  int _itemCount = 9;
   double _viewportFraction = 1.0;
 
   final colors = [
