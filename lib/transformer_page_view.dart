@@ -588,6 +588,7 @@ class _TransformerPageViewState extends State<TransformerPageView> {
         loop: widget.loop,
         reverse:
             widget.transformer == null ? false : widget.transformer!.reverse,
+        viewportFraction: widget.viewportFraction,
       );
     }
     // int initPage = _getRealIndexFromRenderIndex(index);
@@ -615,6 +616,7 @@ class _TransformerPageViewState extends State<TransformerPageView> {
           loop: widget.loop,
           reverse:
               widget.transformer == null ? false : widget.transformer!.reverse,
+          viewportFraction: widget.viewportFraction,
         );
       }
     }
