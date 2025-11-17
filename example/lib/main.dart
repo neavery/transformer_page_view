@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:transformer_page_view/transformer_page_view.dart';
+
 import 'transformers/accordion_transformer.dart';
-import 'transformers/scale_and_fade_transformer.dart';
 import 'transformers/depth_page_transformer.dart';
-import 'transformers/zoom_out_page_transformer.dart';
+import 'transformers/scale_and_fade_transformer.dart';
 import 'transformers/three_d_transformer.dart';
+import 'transformers/zoom_out_page_transformer.dart';
 
 void main() {
   runApp(const MyApp());
@@ -97,7 +98,6 @@ class TransformerListPage extends StatelessWidget {
       ),
     );
   }
-
 }
 
 class TransformerTile extends StatelessWidget {
@@ -117,10 +117,7 @@ class TransformerTile extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: ListTile(
-        title: Text(
-          title,
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        ),
+        title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
         subtitle: Text(description),
         trailing: const Icon(Icons.arrow_forward_ios),
         onTap: () {
@@ -224,11 +221,7 @@ class LoopModeDemo extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(
-                    Icons.loop,
-                    size: 64,
-                    color: Colors.white,
-                  ),
+                  const Icon(Icons.loop, size: 64, color: Colors.white),
                   const SizedBox(height: 20),
                   Text(
                     'Page ${index + 1}',
@@ -259,6 +252,8 @@ class LoopModeDemo extends StatelessWidget {
 class ViewportFractionDemo extends StatelessWidget {
   const ViewportFractionDemo({super.key});
 
+  static const double _viewportFraction = 0.5;
+
   @override
   Widget build(BuildContext context) {
     final colors = [
@@ -275,7 +270,7 @@ class ViewportFractionDemo extends StatelessWidget {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
       body: TransformerPageView(
-        viewportFraction: 0.8,
+        viewportFraction: _viewportFraction,
         transformer: ScaleAndFadeTransformer(),
         itemCount: colors.length,
         itemBuilder: (context, index) {
@@ -299,7 +294,7 @@ class ViewportFractionDemo extends StatelessWidget {
                   ),
                   const SizedBox(height: 20),
                   Text(
-                    'Viewport Fraction: 0.8',
+                    'Viewport Fraction: $_viewportFraction',
                     style: TextStyle(
                       fontSize: 18,
                       color: Colors.white.withValues(alpha: 0.8),
@@ -355,7 +350,7 @@ class _DynamicUpdateDemoState extends State<DynamicUpdateDemo> {
 
   void _updateItemCount(int delta) {
     setState(() {
-      final newCount = (_itemCount + delta).clamp(1, colors.length);
+      final newCount = (_itemCount + delta).clamp(1, 100);
       _itemCount = newCount;
       _controller.setItemCount(newCount);
     });
@@ -363,7 +358,7 @@ class _DynamicUpdateDemoState extends State<DynamicUpdateDemo> {
 
   void _updateViewportFraction(double delta) {
     setState(() {
-      final newFraction = (_viewportFraction + delta).clamp(0.5, 1.0);
+      final newFraction = (_viewportFraction + delta).clamp(0.1, 1.0);
       _viewportFraction = newFraction;
       _controller.setViewportFraction(newFraction);
     });
@@ -385,27 +380,45 @@ class _DynamicUpdateDemoState extends State<DynamicUpdateDemo> {
               itemCount: _itemCount,
               itemBuilder: (context, index) {
                 return Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 10),
+                  margin: const EdgeInsets.symmetric(vertical: 40),
                   decoration: BoxDecoration(
-                    color: colors[index],
+                    color: colors[index % colors.length],
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  child: Center(
-                    child: Text(
-                      'Page ${index + 1}',
-                      style: const TextStyle(
-                        fontSize: 48,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        '${index + 1}',
+                        style: const TextStyle(
+                          fontSize: 48,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
                       ),
-                    ),
+                      ColoredBox(
+                        color: Colors.white,
+                        child: const SizedBox(
+                          height: 2,
+                          width: double.infinity,
+                        ),
+                      ),
+                      Text(
+                        '$_itemCount',
+                        style: const TextStyle(
+                          fontSize: 48,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
                   ),
                 );
               },
             ),
           ),
           Container(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.only(top: 16, left: 16, right: 16),
             decoration: BoxDecoration(
               color: Colors.grey.shade100,
               boxShadow: [
@@ -416,58 +429,60 @@ class _DynamicUpdateDemoState extends State<DynamicUpdateDemo> {
                 ),
               ],
             ),
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Item Count: $_itemCount',
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
+            child: SafeArea(
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Item Count: $_itemCount',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                    Row(
-                      children: [
-                        IconButton(
-                          onPressed: () => _updateItemCount(-1),
-                          icon: const Icon(Icons.remove_circle_outline),
-                        ),
-                        IconButton(
-                          onPressed: () => _updateItemCount(1),
-                          icon: const Icon(Icons.add_circle_outline),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Viewport Fraction: ${_viewportFraction.toStringAsFixed(1)}',
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
+                      Row(
+                        children: [
+                          IconButton(
+                            onPressed: () => _updateItemCount(-1),
+                            icon: const Icon(Icons.remove_circle_outline),
+                          ),
+                          IconButton(
+                            onPressed: () => _updateItemCount(1),
+                            icon: const Icon(Icons.add_circle_outline),
+                          ),
+                        ],
                       ),
-                    ),
-                    Row(
-                      children: [
-                        IconButton(
-                          onPressed: () => _updateViewportFraction(-0.1),
-                          icon: const Icon(Icons.remove_circle_outline),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Viewport Fraction: ${_viewportFraction.toStringAsFixed(1)}',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
                         ),
-                        IconButton(
-                          onPressed: () => _updateViewportFraction(0.1),
-                          icon: const Icon(Icons.add_circle_outline),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ],
+                      ),
+                      Row(
+                        children: [
+                          IconButton(
+                            onPressed: () => _updateViewportFraction(-0.1),
+                            icon: const Icon(Icons.remove_circle_outline),
+                          ),
+                          IconButton(
+                            onPressed: () => _updateViewportFraction(0.1),
+                            icon: const Icon(Icons.add_circle_outline),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ],

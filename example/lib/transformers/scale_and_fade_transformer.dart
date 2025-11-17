@@ -11,7 +11,7 @@ class ScaleAndFadeTransformer extends PageTransformer {
 
   @override
   Widget transform(Widget? child, TransformInfo info) {
-    double position = info.position!;
+    double position = info.position;
     double scaleFactor = (1 - position.abs()) * (1 - _scale);
     double fadeFactor = (1 - position.abs()) * (1 - _fade);
     double opacity = _fade + fadeFactor;
