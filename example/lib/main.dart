@@ -38,80 +38,82 @@ class TransformerListPage extends StatelessWidget {
       ),
       body: ListView(
         children: [
-          _buildTransformerTile(
-            context,
-            'Accordion Transformer',
-            'Scales pages from top-right and bottom-left',
-            () => TransformerDemo(
+          TransformerTile(
+            title: 'Accordion Transformer',
+            description: 'Scales pages from top-right and bottom-left',
+            builder: () => TransformerDemo(
               title: 'Accordion Transformer',
               transformer: AccordionTransformer(),
             ),
           ),
-          _buildTransformerTile(
-            context,
-            'Scale and Fade Transformer',
-            'Scales and fades pages as they move',
-            () => TransformerDemo(
+          TransformerTile(
+            title: 'Scale and Fade Transformer',
+            description: 'Scales and fades pages as they move',
+            builder: () => TransformerDemo(
               title: 'Scale and Fade Transformer',
               transformer: ScaleAndFadeTransformer(),
             ),
           ),
-          _buildTransformerTile(
-            context,
-            'Depth Page Transformer',
-            'Creates a depth effect with overlapping pages',
-            () => TransformerDemo(
+          TransformerTile(
+            title: 'Depth Page Transformer',
+            description: 'Creates a depth effect with overlapping pages',
+            builder: () => TransformerDemo(
               title: 'Depth Page Transformer',
               transformer: DepthPageTransformer(),
             ),
           ),
-          _buildTransformerTile(
-            context,
-            'Zoom Out Transformer',
-            'Zooms out pages during transitions',
-            () => TransformerDemo(
+          TransformerTile(
+            title: 'Zoom Out Transformer',
+            description: 'Zooms out pages during transitions',
+            builder: () => TransformerDemo(
               title: 'Zoom Out Transformer',
               transformer: ZoomOutPageTransformer(),
             ),
           ),
-          _buildTransformerTile(
-            context,
-            '3D Transformer',
-            'Rotates pages in 3D space',
-            () => TransformerDemo(
+          TransformerTile(
+            title: '3D Transformer',
+            description: 'Rotates pages in 3D space',
+            builder: () => TransformerDemo(
               title: '3D Transformer',
               transformer: ThreeDTransformer(),
             ),
           ),
-          _buildTransformerTile(
-            context,
-            'Loop Mode Example',
-            'Infinite scrolling with accordion effect',
-            () => const LoopModeDemo(),
+          TransformerTile(
+            title: 'Loop Mode Example',
+            description: 'Infinite scrolling with accordion effect',
+            builder: () => const LoopModeDemo(),
           ),
-          _buildTransformerTile(
-            context,
-            'Viewport Fraction Example',
-            'Shows multiple pages with custom viewport',
-            () => const ViewportFractionDemo(),
+          TransformerTile(
+            title: 'Viewport Fraction Example',
+            description: 'Shows multiple pages with custom viewport',
+            builder: () => const ViewportFractionDemo(),
           ),
-          _buildTransformerTile(
-            context,
-            'Dynamic Update Example',
-            'Updates itemCount and viewportFraction dynamically',
-            () => const DynamicUpdateDemo(),
+          TransformerTile(
+            title: 'Dynamic Update Example',
+            description: 'Updates itemCount and viewportFraction dynamically',
+            builder: () => const DynamicUpdateDemo(),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildTransformerTile(
-    BuildContext context,
-    String title,
-    String description,
-    Widget Function() builder,
-  ) {
+}
+
+class TransformerTile extends StatelessWidget {
+  final String title;
+  final String description;
+  final Widget Function() builder;
+
+  const TransformerTile({
+    super.key,
+    required this.title,
+    required this.description,
+    required this.builder,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: ListTile(
