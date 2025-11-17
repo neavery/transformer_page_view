@@ -140,12 +140,30 @@ class TransformerPageController extends PageController {
   @override
   double get viewportFraction => _viewportFraction;
 
+  /// Updates the position's viewport fraction using Flutter's internal API.
+  /// This is wrapped in a try-catch because _PagePosition.viewportFraction is private.
+  void _updatePositionViewportFraction(double value) {
+    if (hasClients) {
+      final targetPage = page?.round() ?? 0;
+      final isScrolling = position.isScrollingNotifier.value;
+      try {
+        (position as dynamic).viewportFraction = value;
+        if (isScrolling) {
+          jumpToPage(targetPage);
+        }
+      } catch (e) {
+        // Failed to update position viewportFraction
+      }
+    }
+  }
+
   /// Sets the viewport fraction and updates the scroll position.
   /// This operation updates the scroll position and triggers a rebuild of any listening widgets.
   /// The value must be greater than 0.0 and less than or equal to 1.0.
   void setViewportFraction(double value) {
     if (_viewportFraction != value && value > 0.0 && value <= 1.0) {
       _viewportFraction = value;
+      _updatePositionViewportFraction(value);
 
       if (hasClients && position.hasContentDimensions) {
         position.applyViewportDimension(position.viewportDimension);
@@ -173,6 +191,7 @@ class TransformerPageController extends PageController {
         viewportFraction > 0.0 &&
         viewportFraction <= 1.0) {
       _viewportFraction = viewportFraction;
+      _updatePositionViewportFraction(viewportFraction);
 
       if (hasClients && position.hasContentDimensions) {
         this.position.applyViewportDimension(position.viewportDimension);
@@ -487,7 +506,7 @@ class _TransformerPageViewState extends State<TransformerPageView> {
           } else {
             position = index - page!;
           }
-          position *= widget.viewportFraction;
+          position *= _pageController!.viewportFraction;
 
           final info = TransformInfo(
               index: renderIndex,
@@ -500,7 +519,7 @@ class _TransformerPageViewState extends State<TransformerPageView> {
               forward: _pageController!.position.pixels - _currentPixels! >= 0,
               done: _done,
               scrollDirection: widget.scrollDirection,
-              viewportFraction: widget.viewportFraction);
+              viewportFraction: _pageController!.viewportFraction);
           return _transformer!.transform(w, info);
         });
   }
@@ -509,7 +528,7 @@ class _TransformerPageViewState extends State<TransformerPageView> {
     _currentPixels =
         _pageController!.getRenderIndexFromRealIndex(_activeIndex) *
             _pageController!.position.viewportDimension *
-            widget.viewportFraction;
+            _pageController!.viewportFraction;
 
     return _currentPixels;
   }
@@ -722,10 +741,11 @@ class _TransformerPageViewState extends State<TransformerPageView> {
 
   ChangeNotifier? _notifier;
 
+  @override
   void dispose() {
-    super.dispose();
     if (_notifier != null) {
       _notifier!.removeListener(onChangeNotifier);
     }
+    super.dispose();
   }
 }
