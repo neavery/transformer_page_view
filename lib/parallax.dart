@@ -64,7 +64,7 @@ class ColorPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(ColorPainter oldDelegate) {
-    return oldDelegate.info != info;
+    return oldDelegate.info != info || oldDelegate.colors != colors;
   }
 }
 

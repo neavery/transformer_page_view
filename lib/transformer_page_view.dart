@@ -21,6 +21,7 @@ const int kMiddleValue = 1000000000;
 ///  Default auto play transition duration (in millisecond)
 const int kDefaultTransactionDuration = 300;
 
+@immutable
 class TransformInfo {
   /// The `width` of the `TransformerPageView`
   final double width;
@@ -71,6 +72,38 @@ class TransformInfo {
     required this.viewportFraction,
     required this.scrollDirection,
   });
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is TransformInfo &&
+        other.width == width &&
+        other.height == height &&
+        other.position == position &&
+        other.index == index &&
+        other.activeIndex == activeIndex &&
+        other.fromIndex == fromIndex &&
+        other.forward == forward &&
+        other.done == done &&
+        other.viewportFraction == viewportFraction &&
+        other.scrollDirection == scrollDirection;
+  }
+
+  @override
+  int get hashCode {
+    return Object.hash(
+      width,
+      height,
+      position,
+      index,
+      activeIndex,
+      fromIndex,
+      forward,
+      done,
+      viewportFraction,
+      scrollDirection,
+    );
+  }
 }
 
 abstract class PageTransformer {
