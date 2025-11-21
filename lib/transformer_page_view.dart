@@ -488,6 +488,7 @@ class _TransformerPageViewState extends State<TransformerPageView> {
   late int _activeIndex;
   double? _currentPixels;
   bool _done = false;
+  bool _forward = true;
 
   ///This value will not change until user end drag.
   late int _fromIndex;
@@ -539,7 +540,7 @@ class _TransformerPageViewState extends State<TransformerPageView> {
               activeIndex:
                   _pageController!.getRenderIndexFromRealIndex(_activeIndex),
               fromIndex: _fromIndex,
-              forward: _pageController!.position.pixels - _currentPixels! >= 0,
+              forward: _forward,
               done: _done,
               scrollDirection: widget.scrollDirection,
               viewportFraction: _pageController!.viewportFraction);
@@ -554,6 +555,12 @@ class _TransformerPageViewState extends State<TransformerPageView> {
             _pageController!.viewportFraction;
 
     return _currentPixels;
+  }
+
+  void _updateScrollDirection() {
+    if (_currentPixels != null && _pageController != null) {
+      _forward = _pageController!.position.pixels - _currentPixels! >= 0;
+    }
   }
 
   @override
@@ -579,6 +586,9 @@ class _TransformerPageViewState extends State<TransformerPageView> {
             _calcCurrentPixels();
             _done = false;
             _fromIndex = _activeIndex;
+            _updateScrollDirection();
+          } else if (notification is ScrollUpdateNotification) {
+            _updateScrollDirection();
           } else if (notification is ScrollEndNotification) {
             _calcCurrentPixels();
             _fromIndex = _activeIndex;
