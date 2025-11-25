@@ -25,7 +25,7 @@ class ColorPainter extends CustomPainter {
     double? position = info.position;
     if (info.forward!) {
       if (index < colors.length - 1) {
-        color = colors[index + 1].value & 0x00ffffff;
+        color = colors[index + 1].toARGB32() & 0x00ffffff;
         opacity = (position! <= 0
             ? (-position / info.viewportFraction!)
             : 1 - position / info.viewportFraction!);
@@ -43,7 +43,7 @@ class ColorPainter extends CustomPainter {
       }
     } else {
       if (index > 0) {
-        color = colors[index - 1].value & 0x00ffffff;
+        color = colors[index - 1].toARGB32() & 0x00ffffff;
         opacity = (position! > 0
             ? position / info.viewportFraction!
             : (1 + position / info.viewportFraction!));
@@ -64,7 +64,7 @@ class ColorPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(ColorPainter oldDelegate) {
-    return oldDelegate.info != info;
+    return oldDelegate.info != info || oldDelegate.colors != colors;
   }
 }
 
@@ -105,11 +105,12 @@ class ParallaxContainer extends StatelessWidget {
   final double translationFactor;
   final double opacityFactor;
 
-  ParallaxContainer(
-      {required this.child,
-      required this.position,
-      this.translationFactor: 100.0,
-      this.opacityFactor: 1.0});
+  ParallaxContainer({
+    required this.child,
+    required this.position,
+    this.translationFactor = 100.0,
+    this.opacityFactor = 1.0,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -127,9 +128,11 @@ class ParallaxImage extends StatelessWidget {
   final Image image;
   final double imageFactor;
 
-  ParallaxImage.asset(String name,
-      {required double position, this.imageFactor: 0.3})
-      : image = Image.asset(name,
+  ParallaxImage.asset(
+    String name, {
+    required double position,
+    this.imageFactor = 0.3,
+  }) : image = Image.asset(name,
             fit: BoxFit.cover,
             alignment: FractionalOffset(
               0.5 + position * imageFactor,
