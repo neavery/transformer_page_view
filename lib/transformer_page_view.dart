@@ -161,11 +161,29 @@ class TransformerPageController extends PageController {
 
   int get itemCount => _itemCount;
 
+  // True for the duration of the frame in which itemCount/viewportFraction
+  // changed. Changing those makes the PageView relayout and recompute its
+  // page from the current scroll metrics, which can transiently settle on a
+  // different page (e.g. report page 1 when the list size changes). That is
+  // not a user-driven navigation, so the view suppresses onPageChanged while
+  // this is set. It is cleared on the next frame, so genuine scrolls (which
+  // happen in later frames) still report.
+  bool _isApplyingConfigChange = false;
+  bool get isApplyingConfigChange => _isApplyingConfigChange;
+
+  void _markConfigChange() {
+    _isApplyingConfigChange = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _isApplyingConfigChange = false;
+    });
+  }
+
   /// Sets the item count and notifies listeners for auto-rebuild.
   /// This operation triggers a rebuild of any listening widgets.
   void setItemCount(int value) {
     if (_itemCount != value) {
       _itemCount = value;
+      _markConfigChange();
       notifyListeners();
     }
   }
@@ -180,6 +198,7 @@ class TransformerPageController extends PageController {
     if (_viewportFraction != value && value > 0.0 && value <= 1.0) {
       _viewportFraction = value;
       _updatePositionViewportFraction(value);
+      _markConfigChange();
       notifyListeners();
     }
   }
@@ -207,6 +226,7 @@ class TransformerPageController extends PageController {
     }
 
     if (changed) {
+      _markConfigChange();
       notifyListeners();
     }
   }
@@ -601,6 +621,13 @@ class _TransformerPageViewState extends State<TransformerPageView> {
   }
 
   void _onIndexChanged(int index) {
+    // A page change emitted while the controller is applying an itemCount or
+    // viewportFraction change is a side effect of the relayout, not a real
+    // navigation (the PageView can transiently settle on a different page).
+    // Ignore it; the owner drives the page explicitly in that case.
+    if (_pageController!.isApplyingConfigChange) {
+      return;
+    }
     _activeIndex = index;
     if (widget.onPageChanged != null) {
       widget
